@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (C) 2016 by Eric Bataille <e.c.p.bataille@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace ThoNohT.NohBoard.Hooking
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using static Interop.Defines;
@@ -35,6 +36,11 @@ namespace ThoNohT.NohBoard.Hooking
         private static readonly HashSet<int> pressedKeys = new HashSet<int>();
 
         /// <summary>
+        /// A dictionary containing the time of the last pressing time of each key.
+        /// </summary>
+        private static readonly Dictionary<int, DateTime> lastPressTimeOfKeys = new Dictionary<int, DateTime>();
+
+        /// <summary>
         /// A value indicating whether something has changed since the last check.
         /// </summary>
         private static bool updated;
@@ -49,9 +55,9 @@ namespace ThoNohT.NohBoard.Hooking
         {
             get
             {
-                if (!updated) return false;
+                //if (!updated) return false;
 
-                updated = false;
+                //updated = false;
                 return true;
             }
         }
@@ -61,7 +67,22 @@ namespace ThoNohT.NohBoard.Hooking
         /// </summary>
         public static IReadOnlyList<int> PressedKeys
         {
-            get { lock (pressedKeys) return pressedKeys.ToList().AsReadOnly(); }
+            get
+            {
+                lock (pressedKeys)
+                {
+                    List <int> ret = pressedKeys.ToList();
+
+                    foreach (KeyValuePair <int, DateTime> pair in lastPressTimeOfKeys)
+                    {
+                        if (pair.Value > DateTime.Now.AddMilliseconds(-40) && !ret.Contains(pair.Key))
+                        {
+                            ret.Add(pair.Key);
+                        }
+                    }
+                    return ret.AsReadOnly();
+                }
+            }
         }
 
         /// <summary>
@@ -116,6 +137,8 @@ namespace ThoNohT.NohBoard.Hooking
         {
             lock (pressedKeys)
             {
+                lastPressTimeOfKeys[keyCode] = DateTime.Now;
+
                 if (pressedKeys.Contains(keyCode)) return;
 
                 pressedKeys.Add(keyCode);
