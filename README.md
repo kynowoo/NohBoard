@@ -1,3 +1,12 @@
+## Words of fixing
+
+NohBoard is a keyboard visualization program, maintained by Eric "ThoNohT" Bataille (e.c.p.bataille@gmail.com).
+This version was forked and fixed to record key press of the playing of the music game called touch.
+
+If a key is pressed and released in such a very short time, when a drawing frame comes before the press and the next frame comes after the release, that no frame would show the press and release.
+What is fixed is that a hold-on time of 40 ms is garanted if the pressing period is too short, so that the press and release can be shown in the movie record (mp4, fpv, etc.) if fps is set with a number more than 30.
+
+
 # NohBoard
 
 NohBoard is a keyboard visualization program. I know certain applications already exist that do just this, display your keyboard on-screen. And even more probably. However, so far I have found none that were both free and easy to use. That's where this program came in, I made it to be free and easy to use, without any fancy graphics, and easily capturable (possibly with chroma key). Furthermore, it's very customizable.
